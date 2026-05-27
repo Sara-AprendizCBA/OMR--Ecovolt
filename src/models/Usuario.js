@@ -12,20 +12,30 @@ const Usuario = sequelize.define('Usuario', {
         allowNull: false 
     },
     correo: {
-        type: DataTypes.STRING(150),
+        type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
         validate: {
-            isEmail: true // Valida el formato antes de guardar
+            isEmail: true 
         }
     },
     telefono: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(15),
         allowNull: true
-    }}, {
+    },
+    contrasena: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    CiudadResidencia: {
+        type: DataTypes.STRING(80),
+        allowNull: false
+    },
+
+}, {
         timestamps: true,
-        paranoid: true, // Crear el campo deleted_at
-        tableName: 'usuarios' // En plural y en minusculas
+        paranoid: true, 
+        tableName: 'usuarios'
     });
 
     module.exports = Usuario;

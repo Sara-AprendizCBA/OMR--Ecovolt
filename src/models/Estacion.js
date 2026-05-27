@@ -8,26 +8,23 @@ const Estacion = sequelize.define('Estacion', {
         primaryKey: true
     },
     nombre: {
-        type: DataTypes.STRING(120),
+        type: DataTypes.STRING(100),
         allowNull: false
     },
-    latitud: {
-        type: DataTypes.DECIMAL(9, 6),
-        allowNull: false
-    },
-    longitud: {
-        type: DataTypes.DECIMAL(9, 6),
+    Ubicacion: {
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     precioKw: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         validate: {
-            min: 0.0
+            min: 0.01
         }
     }
 }, {
     timestamps: true,
+    paranoid: true,
     tableName: 'estaciones'
 });
 
