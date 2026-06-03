@@ -34,3 +34,40 @@ Se implementaron validaciones rigurosas en el modelo `Estacion`:
 Estas validaciones garantizan que los datos sean realistas y consistentes con la geografía de Colombia.
 
 ---
+
+# Correcciones Realizadas - Proyecto Estaciones de Carga
+
+## Correcciones según observaciones
+
+Se han corregido los **4 errores** identificados :
+
+---
+
+### 1. Soft Delete y SET NULL (Usuario)
+
+**Problema:** `onDelete: 'SET NULL'` no funciona con `paranoid: true`.  
+**Corrección aplicada:**
+- Se implementó un hook `afterDestroy` en el modelo `Usuario`.
+- Al realizar soft delete de un usuario, sus reservas se actualizan automáticamente:
+  - `idUsuario` → `NULL`
+  - `estado` → `'Cancelada'`
+
+---
+
+###  2. Redundancia Lógica en el modelo Reserva
+
+**Problema:** Se guardaba tanto `idEstacion` como `idConector` en las reservas.  
+**Corrección aplicada:**
+- Se eliminó completamente el campo `idEstacion` del modelo `Reserva`.
+- Ahora solo se referencia `idConector` (correcto y normalizado).
+
+---
+
+###  3. Relación faltante entre Estación y Conector
+
+**Problema:** No estaba definida la relación principal `Estacion ↔ Conector`.  
+**Corrección aplicada:**
+- Se agregaron correctamente las asociaciones en `models/index.js`:
+  ```js
+  Estacion.hasMany(Conector, { foreignKey: 'idEstacion', as: 'conectores' });
+  Conector.belongsTo(Estacion, { foreignKey: 'idEstacion', as: 'estacion' });
