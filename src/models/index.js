@@ -3,8 +3,9 @@ const Estacion = require('./Estacion');
 const Conector = require('./Conector');
 const Reserva = require('./Reserva');
 
-
-// Usuario - Reserva (Soft Delete)
+// ======================
+// Usuario ↔ Reserva
+// ======================
 Usuario.hasMany(Reserva, {
     foreignKey: 'idUsuario',
     as: 'reservas',
@@ -17,19 +18,9 @@ Reserva.belongsTo(Usuario, {
     as: 'usuario'
 });
 
-// Estacion - Reserva
-Estacion.hasMany(Reserva, {
-    foreignKey: 'idEstacion',
-    as: 'reservas',
-    onDelete: 'RESTRICT'
-});
-
-Reserva.belongsTo(Estacion, {
-    foreignKey: 'idEstacion',
-    as: 'estacion'
-});
-
-// Conector - Reserva
+// ======================
+// Conector ↔ Reserva
+// ======================
 Conector.hasMany(Reserva, {
     foreignKey: 'idConector',
     as: 'reservas'
@@ -38,6 +29,19 @@ Conector.hasMany(Reserva, {
 Reserva.belongsTo(Conector, {
     foreignKey: 'idConector',
     as: 'conector'
+});
+
+// ======================
+// Estacion ↔ Conector 
+// ======================
+Estacion.hasMany(Conector, {
+    foreignKey: 'idEstacion',
+    as: 'conectores'
+});
+
+Conector.belongsTo(Estacion, {
+    foreignKey: 'idEstacion',
+    as: 'estacion'
 });
 
 module.exports = { Usuario, Estacion, Conector, Reserva };

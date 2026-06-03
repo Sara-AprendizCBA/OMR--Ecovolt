@@ -10,7 +10,10 @@ const Estacion = sequelize.define('Estacion', {
     },
     nombre: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            len: [3, 100]
+        }
     },
     ubicacion: {
         type: DataTypes.STRING(100),
@@ -33,17 +36,30 @@ const Estacion = sequelize.define('Estacion', {
         }
     },
     precioKw: {
-        type: DataTypes.DECIMAL(5, 2),
+        type: DataTypes.DECIMAL(6, 2),
         allowNull: false,
         validate: {
             min: 0.01,
-            max: 500.00
+            max: 150.00,                  
+            isDecimal: true
         }
     }
 }, {
     timestamps: true,
     paranoid: true,
-    tableName: 'estaciones'
+    tableName: 'estaciones',
+    hooks: {
+        beforeUpdate: async (estacion) => {
+            if (estacion.changed('precioKw')) {
+                const precioAnterior = estacion._previousDataValues.precioKw;
+                const precioNuevo = estacion.precioKw;
+
+                if (precioAnterior && precioNuevo > precioAnterior * 2) {
+                    throw new Error('No se permite aumentar el precio más del 100% en una sola actualización.');
+                }
+            }
+        }
+    }
 });
 
 module.exports = Estacion;
