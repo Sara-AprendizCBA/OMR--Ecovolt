@@ -34,7 +34,27 @@ const Conector = sequelize.define('Conector', {
 }, {
     timestamps: true,
     paranoid: true,
-    tableName: 'conectores'
+    tableName: 'conectores',
+    hooks: {
+        // Cuando un conector se elimina (soft-delete), propagamos el
+        // borrado a sus reservas relacionadas para mantener coherencia.
+        beforeDestroy: async (conector, options) => {
+            const Reserva = sequelize.models.Reserva;
+            if (Reserva) {
+                await Reserva.destroy({ where: { idConector: conector.id }, individualHooks: true, transaction: options ? options.transaction : null });
+            }
+        },
+        // Manejar borrados por lotes (bulk destroy)
+        beforeBulkDestroy: async (options) => {
+            const Reserva = sequelize.models.Reserva;
+            if (Reserva && options.where) {
+                const conectores = await sequelize.models.Conector.findAll({ where: options.where, transaction: options.transaction });
+                for (const c of conectores) {
+                    await Reserva.destroy({ where: { idConector: c.id }, individualHooks: true, transaction: options.transaction });
+                }
+            }
+        }
+    }
 });
 
 module.exports = Conector;

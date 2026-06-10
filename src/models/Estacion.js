@@ -58,6 +58,21 @@ const Estacion = sequelize.define('Estacion', {
                     throw new Error('No se permite aumentar el precio más del 100% en una sola actualización.');
                 }
             }
+        },
+        beforeDestroy: async (estacion, options) => {
+            const Conector = sequelize.models.Conector;
+            if (Conector) {
+                await Conector.destroy({ where: { idEstacion: estacion.id }, individualHooks: true, transaction: options ? options.transaction : null });
+            }
+        },
+        beforeBulkDestroy: async (options) => {
+            const Conector = sequelize.models.Conector;
+            if (Conector && options.where) {
+                const estaciones = await sequelize.models.Estacion.findAll({ where: options.where, transaction: options.transaction });
+                for (const e of estaciones) {
+                    await Conector.destroy({ where: { idEstacion: e.id }, individualHooks: true, transaction: options.transaction });
+                }
+            }
         }
     }
 });

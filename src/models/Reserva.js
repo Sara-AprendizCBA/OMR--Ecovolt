@@ -11,10 +11,19 @@ const Reserva = sequelize.define('Reserva', {
     idUsuario: {
         type: DataTypes.UUID,
         allowNull: true,           // Permite NULL por Soft Delete
+        references: {
+            model: 'usuarios',
+            key: 'id'
+        }
     },
     idConector: {
         type: DataTypes.UUID,
         allowNull: false
+        ,
+        references: {
+            model: 'conectores',
+            key: 'id'
+        }
     },
     fechaReserva: {
         type: DataTypes.DATEONLY,
